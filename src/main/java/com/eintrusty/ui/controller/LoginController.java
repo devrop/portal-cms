@@ -11,12 +11,20 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.net.URI;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import com.eintrusty.ui.dto.UserBean;
+import com.eintrusty.ui.dto.UserDto;
 
 
 /**
@@ -37,10 +45,22 @@ public class LoginController {
     public String cekLogin (@ModelAttribute("loginBean") UserBean loginBean,HttpSession session,Model model){
        String username = loginBean.getUsername();
        String password = loginBean.getPassword();
-       Map<String,String> parameterLogin = new HashMap<String,String>();
-       parameterLogin.put("username", username);
-       parameterLogin.put("password", password);
        
+       HttpHeaders headers = new HttpHeaders();
+   	   headers.setContentType(MediaType.APPLICATION_JSON);
+       RestTemplate restTemplate = new RestTemplate();
+       UserDto userDto = new UserDto();
+       userDto.setUsername(username);
+       userDto.setPassword(password);
+	   String url = "http://localhost:8080/login";
+       HttpEntity<UserDto> requestEntity = new HttpEntity<UserDto>(userDto, headers);
+       ResponseEntity<UserDto> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, UserDto.class);
+       UserDto userGet = responseEntity.getBody();
+       if(userGet ==null){
+    	   
+       }
+       
+       //URI uri = restTemplate.postForLocation(url, requestEntity);
       //UserDto userLogin = us.findActiveUserLogin(parameterLogin);
        //if(userLogin != null){
     	   //User
