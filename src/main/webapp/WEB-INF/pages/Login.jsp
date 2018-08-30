@@ -53,7 +53,7 @@
 					<img src="${im01Png}" alt="IMG">
 				</div>
 
-				<form:form class="login100-form validate-form" action="/bootcamp/login/sumbit" modelAttribute="loginBean" method="POST">
+				<form:form class="login100-form validate-form" action="/portal-customer-service/Login/sumbit" modelAttribute="loginBean" method="POST">
 					<span class="login100-form-title">
 						Member Login
 					</span>

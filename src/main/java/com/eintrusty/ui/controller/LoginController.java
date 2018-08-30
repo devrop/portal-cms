@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.eintrusty.ui.dto.UserBean;
 import com.eintrusty.ui.dto.UserDto;
+import com.eintrusty.ui.utiity.StringUtility;
 
 
 /**
@@ -44,14 +45,14 @@ public class LoginController {
     @RequestMapping("sumbit")
     public String cekLogin (@ModelAttribute("loginBean") UserBean loginBean,HttpSession session,Model model){
        String username = loginBean.getUsername();
-       String password = loginBean.getPassword();
-       
+       String enpassword = StringUtility.encrypt(loginBean.getPassword());
+       System.out.println("password" + enpassword);
        HttpHeaders headers = new HttpHeaders();
    	   headers.setContentType(MediaType.APPLICATION_JSON);
        RestTemplate restTemplate = new RestTemplate();
        UserDto userDto = new UserDto();
        userDto.setUsername(username);
-       userDto.setPassword(password);
+       userDto.setPassword(enpassword);
 	   String url = "http://localhost:8080/login";
        HttpEntity<UserDto> requestEntity = new HttpEntity<UserDto>(userDto, headers);
        ResponseEntity<UserDto> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, UserDto.class);
