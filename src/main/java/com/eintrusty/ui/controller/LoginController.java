@@ -5,7 +5,9 @@
  */
 package com.eintrusty.ui.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -21,10 +23,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import com.eintrusty.ui.constant.VariableConstant;
+import com.eintrusty.ui.dto.DataResponse;
 import com.eintrusty.ui.dto.UserBean;
 import com.eintrusty.ui.dto.UserDto;
+import com.eintrusty.ui.utiity.JsonUtility;
 import com.eintrusty.ui.utiity.StringUtility;
 
 
@@ -45,19 +51,23 @@ public class LoginController {
     @RequestMapping("sumbit")
     public String cekLogin (@ModelAttribute("loginBean") UserBean loginBean,HttpSession session,Model model){
        String username = loginBean.getUsername();
-       String enpassword = StringUtility.encrypt(loginBean.getPassword());
-       System.out.println("password" + enpassword);
+       String enpassword = loginBean.getPassword();
+        //String enpassword = StringUtility.encrypt(loginBean.getPassword());
+       //System.out.println("password" + enpassword);
        HttpHeaders headers = new HttpHeaders();
-   	   headers.setContentType(MediaType.APPLICATION_JSON);
+       headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
        RestTemplate restTemplate = new RestTemplate();
+       restTemplate.setMessageConverters(JsonUtility.getMessageConvertersApplicationJson());
        UserDto userDto = new UserDto();
        userDto.setUsername(username);
        userDto.setPassword(enpassword);
-	   String url = "http://localhost:8080/login";
+	   String url = "https://eintrusty-pengeluaranbulanan.herokuapp.com/app/login";
        HttpEntity<UserDto> requestEntity = new HttpEntity<UserDto>(userDto, headers);
-       ResponseEntity<UserDto> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, UserDto.class);
-       UserDto userGet = responseEntity.getBody();
-       if(userGet ==null){
+       ResponseEntity<DataResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, DataResponse.class);
+       DataResponse dataGet = responseEntity.getBody();
+       if(dataGet.getMessage().equalsIgnoreCase(VariableConstant.MESSAGESTATUSOK)){
+    	   
+    	   return "succeslogin";
     	   
        }
        
